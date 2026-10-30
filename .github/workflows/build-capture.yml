@@ -1,0 +1,32 @@
+name: Build Capture Helper
+
+on:
+  push:
+    branches:
+      - integration/engine-v0.3
+  pull_request:
+    branches:
+      - integration/engine-v0.3
+  workflow_dispatch:
+
+jobs:
+  build-capture:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Build Capture helper
+        run: dotnet build Capture.csproj --configuration Release
+
+      - name: Upload Capture helper
+        uses: actions/upload-artifact@v4
+        with:
+          name: STD-AIO-Capture
+          path: bin/Release/net8.0-windows10.0.19041.0/
+          if-no-files-found: error
