@@ -25,7 +25,8 @@ Development build for Sorcerer Tower Defense.
 2. Install AutoHotkey v2.
 3. Capture your own PNG templates from the current game UI and put them in `Templates/`.
 4. Configure placement coordinates in `config.ini` only after checking them against your Roblox client resolution.
-5. Run `GUI.ahk`, open Roblox, activate its window, and press START.
+5. Run `GUI.ahk` and press START.
+6. Switch to Roblox. The engine waits until Roblox is the foreground window before sending input.
 
 ## Template names
 
@@ -33,7 +34,7 @@ See [Templates/README.txt](Templates/README.txt) for all state and action marker
 
 ## Safety and behavior
 
-- Unknown game state means **no automation actions**.
+- Unknown game state means **no automation actions**; recognized state changes must be stable for two consecutive scans.
 - Automatic actions only run in the recognized lobby or match state.
 - Upgrade and skip require separate availability markers; upgrade also requires a selected-unit marker.
 - Only one configured placement is attempted per engine tick.
