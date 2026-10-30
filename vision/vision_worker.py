@@ -60,8 +60,8 @@ def enable_dpi_awareness():
         pass
 
 
-def find_roblox_client():
-    """Return (hwnd, client_left, client_top, client_width, client_height)."""
+def find_roblox_client(target_hwnd=0):
+    """Return the requested Roblox client area, or the largest one if unspecified."""
     pids = set()
     for proc in psutil.process_iter(["pid", "name"]):
         try:
@@ -75,6 +75,8 @@ def find_roblox_client():
     found = []
 
     def visit(hwnd, _):
+        if target_hwnd and int(hwnd) != target_hwnd:
+            return True
         if not USER32.IsWindowVisible(hwnd):
             return True
         pid = wintypes.DWORD()
@@ -171,6 +173,7 @@ def main():
     parser.add_argument("--templates", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--stop-file", type=Path, required=True)
+    parser.add_argument("--hwnd", type=int, default=0, help="Exact Roblox top-level window handle")
     parser.add_argument("--fps", type=float, default=8.0)
     parser.add_argument("--threshold", type=float, default=0.82)
     parser.add_argument("--once", action="store_true")
@@ -190,7 +193,7 @@ def main():
     with mss.mss() as capture:
         while not args.stop_file.exists():
             started = time.perf_counter()
-            window = find_roblox_client()
+            window = find_roblox_client(args.hwnd)
             if window is None:
                 publish(args.output, "ROBLOX_NOT_FOUND", (0, 0), (0, 0), [])
             else:
