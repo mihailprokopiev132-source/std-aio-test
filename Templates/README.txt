@@ -23,4 +23,4 @@ IMPORTANT:
 - Do not create state markers from similar-looking UI elements; each state marker must be unique.
 - Unknown state disables all modules. If no marker is detected, the engine will wait.
 - Do not enable automatic placement until placement coordinates and slot keys have been checked.
-- The engine currently uses ImageSearch, not OpenCV or OCR. The Python detector is a separate prototype.
+- The engine uses the integrated OpenCV worker when it is available and falls back to AHK ImageSearch if the worker fails. The worker currently performs template matching only; OCR is not implemented.
