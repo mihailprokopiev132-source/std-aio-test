@@ -17,7 +17,7 @@ Development build for Sorcerer Tower Defense.
 - Windows 10/11
 - AutoHotkey v2.0
 - Roblox client
-- Optional: .NET 8 Windows Desktop Runtime / SDK to build the preview helper
+- Optional: .NET 8 SDK to build the preview helper
 
 ## Run
 
@@ -29,6 +29,8 @@ Use **`GUI.ahk`** as the main application entry point. `STD-AIO.ahk` is the earl
 4. Configure placement coordinates in `config.ini` only after checking them against your Roblox client resolution.
 5. Run `GUI.ahk` and press START.
 6. Switch to Roblox. The engine waits until Roblox is the foreground window before sending input.
+
+To build the optional DWM preview helper locally, run `dotnet build Capture.csproj --configuration Debug` from the repository root. The main automation engine does not require this preview helper.
 
 ## Template names
 
