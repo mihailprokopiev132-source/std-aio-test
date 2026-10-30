@@ -2,6 +2,8 @@
 
 global CurrentGameState := "Unknown"
 global PreviousGameState := "Unknown"
+global PendingGameState := ""
+global PendingGameStateCount := 0
 
 DetectGameState() {
     ; User-captured visual markers; no game-specific UI assumptions are embedded.
@@ -20,9 +22,30 @@ DetectGameState() {
 
 UpdateGameState() {
     global CurrentGameState, PreviousGameState, AutoPlaceDone, ModuleCooldowns
+    global PendingGameState, PendingGameStateCount
+
     detected := DetectGameState()
+
+    ; Unknown or a one-frame transition blocks actions immediately without
+    ; resetting per-match progress. A new positive state needs two consecutive hits.
+    if detected = "Unknown" {
+        PendingGameState := ""
+        PendingGameStateCount := 0
+        return "Unknown"
+    }
+
+    if detected != PendingGameState {
+        PendingGameState := detected
+        PendingGameStateCount := 1
+        return "Unknown"
+    }
+
+    PendingGameStateCount += 1
+    if PendingGameStateCount < 2
+        return "Unknown"
+
     if detected = CurrentGameState
-        return detected
+        return CurrentGameState
 
     PreviousGameState := CurrentGameState
     CurrentGameState := detected
@@ -32,5 +55,6 @@ UpdateGameState() {
         AutoPlaceDone := Map()
     if CurrentGameState = "Lobby" && PreviousGameState != "Lobby"
         ModuleCooldowns := Map()
+
     return CurrentGameState
 }
