@@ -141,6 +141,12 @@ def detect(frame_bgr, templates, threshold):
             if not np.isfinite(score) or score < threshold:
                 break
             x, y = location
+            # CCOEFF_NORMED can report a perfect score for constant image patches.
+            # Reject low-information frame regions before accepting a detection.
+            patch = gray[y:y + th, x:x + tw]
+            if patch.shape != template.shape or float(patch.std()) < 1.0:
+                scores[y, x] = -1.0
+                continue
             hits.append((name, int(x), int(y), int(tw), int(th), float(score)))
             pad_x, pad_y = max(3, tw // 2), max(3, th // 2)
             x1, y1 = max(0, x - pad_x), max(0, y - pad_y)
