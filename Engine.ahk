@@ -6,6 +6,7 @@ global ModuleCooldowns := Map()
 EngineStart() {
     global IsRunning, RobloxHwnd, Settings, StartButton, StopButton
     global CurrentGameState, PreviousGameState, AutoPlaceDone, ModuleCooldowns
+    global PendingGameState, PendingGameStateCount
     if IsRunning
         return true
 
@@ -23,6 +24,8 @@ EngineStart() {
     AutoPlaceDone := Map()
     CurrentGameState := "Unknown"
     PreviousGameState := "Unknown"
+    PendingGameState := ""
+    PendingGameStateCount := 0
     StartButton.Enabled := false
     StopButton.Enabled := true
     UpdateStatus("RUNNING")
