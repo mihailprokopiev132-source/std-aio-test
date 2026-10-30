@@ -8,8 +8,7 @@ LoadSettings() {
     Settings := Map()
 
     Settings["CaptureInterval"] := ReadIniInt("General", "CaptureInterval", 250, 30, 5000)
-    method := IniRead(ConfigPath, "General", "RecognitionMethod", "ImageSearch")
-    Settings["RecognitionMethod"] := method = "ImageSearch" ? method : "ImageSearch"
+    Settings["RecognitionMethod"] := "OpenCV + ImageSearch fallback"
 
     mode := IniRead(ConfigPath, "General", "GameMode", "Solo")
     Settings["GameMode"] := (mode = "Multiplayer") ? mode : "Solo"
@@ -60,7 +59,7 @@ SaveSettingsFromGui() {
         throw ValueError("Capture interval must be between 30 and 5000 ms.")
 
     Settings["CaptureInterval"] := interval
-    Settings["RecognitionMethod"] := "ImageSearch"
+    Settings["RecognitionMethod"] := "OpenCV + ImageSearch fallback"
     Settings["GameMode"] := ModeSelect.Text = "Multiplayer" ? "Multiplayer" : "Solo"
     Settings["AutoFarm"] := FarmCheck.Value = 1
     Settings["AutoUpgrade"] := UpgradeCheck.Value = 1
@@ -68,7 +67,7 @@ SaveSettingsFromGui() {
     Settings["AutoPlace"] := AutoPlaceCheck.Value = 1
 
     IniWrite(interval, ConfigPath, "General", "CaptureInterval")
-    IniWrite("ImageSearch", ConfigPath, "General", "RecognitionMethod")
+    IniWrite("OpenCV + ImageSearch fallback", ConfigPath, "General", "RecognitionMethod")
     IniWrite(Settings["GameMode"], ConfigPath, "General", "GameMode")
     IniWrite(Settings["AutoFarm"] ? 1 : 0, ConfigPath, "Modules", "AutoFarm")
     IniWrite(Settings["AutoUpgrade"] ? 1 : 0, ConfigPath, "Modules", "AutoUpgrade")
