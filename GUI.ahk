@@ -1,6 +1,16 @@
 ﻿
 #Requires AutoHotkey v2.0
 #SingleInstance Force
+#Include Config.ahk
+#Include Input.ahk
+#Include ImageRecognition.ahk
+#Include AutoFarm.ahk
+#Include AutoPlace.ahk
+#Include AutoUpgrade.ahk
+#Include AutoSkip.ahk
+#Include Engine.ahk
+
+global Settings := LoadSettings()
 
 ; ==========================================
 ; STD-AIO | Sorcerer Tower Defense
