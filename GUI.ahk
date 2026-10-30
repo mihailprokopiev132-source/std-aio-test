@@ -201,7 +201,7 @@ MainGui.AddText("x35 y180 w250 h20", "RECOGNITION")
 
 global RecognitionSelect := MainGui.AddDropDownList(
     "x35 y210 w200 Choose1",
-    ["ImageSearch"]
+    ["OpenCV + ImageSearch fallback"]
 )
 
 MainGui.AddText("x35 y260 w250 h20", "CAPTURE INTERVAL (MS)")
