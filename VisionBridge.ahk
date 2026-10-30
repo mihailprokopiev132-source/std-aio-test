@@ -76,11 +76,16 @@ VisionFindTemplate(templateName, &foundX, &foundY) {
 
     try {
         modified := FileGetTime(VisionOutputPath, "M")
-        if DateDiff(A_Now, modified, "Seconds") > 3
-            return -2
+    } catch {
+        return -1
+    }
+    if DateDiff(A_Now, modified, "Seconds") > 3
+        return -2
+    try {
         content := FileRead(VisionOutputPath, "UTF-8")
     } catch {
-        return -2
+        ; A frame may be atomically replaced while the reader opens it.
+        return -1
     }
 
     lines := StrSplit(content, "`n", "`r")
