@@ -22,6 +22,10 @@ FindTemplate(templateName, &foundX := 0, &foundY := 0, variation := 25) {
     }
     if visionResult = 0 || visionResult = -1
         return false
+    if visionResult = -2 {
+        VisionStop()
+        AddLog("OpenCV worker stopped responding; falling back to ImageSearch.")
+    }
 
     file := TemplateDir "\" templateName ".png"
     if !FileExist(file)
