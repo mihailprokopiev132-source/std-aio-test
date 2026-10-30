@@ -2,64 +2,66 @@
 
 Development build for Sorcerer Tower Defense.
 
-## Current architecture
+## Architecture
 
-- **GUI.ahk** — AutoHotkey v2 control panel.
+- **GUI.ahk** — AutoHotkey v2 control panel and main entry point.
 - **Engine.ahk** — guarded timer loop; pauses actions unless Roblox is foreground.
-- **GameState.ahk** — template-based state detection.
-- **ImageRecognition.ahk** — PNG template matching in the visible Roblox client area.
-- **Input.ahk** — mouse and key input restricted to the Roblox client area and focused window.
+- **VisionBridge.ahk** — starts/stops the Python worker and reads fresh detections.
+- **vision/vision_worker.py** — Windows client-area capture and OpenCV template matching.
+- **GameState.ahk** — template-based state detection with transition confirmation.
+- **ImageRecognition.ahk** — OpenCV first, built-in AHK ImageSearch fallback.
+- **Input.ahk** — input restricted to the Roblox client area and focused window.
 - **AutoFarm / AutoPlace / AutoUpgrade / AutoSkip** — state-gated automation modules.
-- **Capture.csproj** — optional DWM thumbnail preview helper. DWM preview is not a raw image-frame API.
+- **Capture.csproj** — optional DWM thumbnail preview helper; it does not provide recognition frames.
 
 ## Requirements
 
 - Windows 10/11
 - AutoHotkey v2.0
 - Roblox client
-- Optional: .NET 8 SDK to build the preview helper
+- Python 3.10+ (optional, for OpenCV recognition)
+- .NET 8 SDK (optional, for the DWM preview helper)
 
-## Run
+## Setup and run
 
-Use **`GUI.ahk`** as the main application entry point. `STD-AIO.ahk` is the earlier standalone screen-preview prototype and is not the integrated engine.
+Use **GUI.ahk** as the main application entry point. `STD-AIO.ahk` is the earlier standalone preview prototype.
 
-1. Keep the AHK files and `config.ini` in the same folder.
+1. Keep the repository files and `config.ini` together.
 2. Install AutoHotkey v2.
-3. Install the optional OpenCV dependencies with `python -m pip install -r requirements-vision.txt`.
+3. For OpenCV recognition, install Python 3.10+ and run:
+   `python -m pip install -r requirements-vision.txt`
 4. Capture your own PNG templates from the current game UI and put them in `Templates/`.
-5. Keep template filenames to letters, numbers, underscores, or hyphens (for example `state_match.png`).
-4. Configure placement coordinates in `config.ini` only after checking them against your Roblox client resolution.
-5. Run `GUI.ahk` and press START.
-6. Switch to Roblox. The engine waits until Roblox is the foreground window before sending input.
+5. Use template filenames containing only letters, numbers, underscores, or hyphens, for example `state_match.png`.
+6. Configure placement coordinates in `config.ini` only after checking them against your Roblox client resolution.
+7. Run `GUI.ahk` and press START.
+8. Switch to Roblox. The engine waits until Roblox is the foreground window before sending input.
 
-To build the optional DWM preview helper locally, run `dotnet build Capture.csproj --configuration Debug` from the repository root. The main automation engine does not require this preview helper.
+If Python or the OpenCV dependencies are unavailable, the engine falls back to AHK ImageSearch. The optional preview helper can be built with `dotnet build Capture.csproj --configuration Debug` from the repository root.
 
-## Template names
+## Templates
 
-See [Templates/README.txt](Templates/README.txt) for all state and action markers.
+See [Templates/README.txt](Templates/README.txt) for the required state and action markers. The worker currently scans PNG files only.
 
-## Safety and behavior
+## Vision worker
+
+The worker is read-only: it captures the Roblox client area and recognizes templates; it never sends mouse or keyboard input. It runs at 8 FPS with a default similarity threshold of 0.82 and publishes detections atomically to `runtime/vision.tsv`. The AHK bridge accepts only fresh results. If the worker fails or stops updating, the engine stops it and falls back to ImageSearch.
+
+The capture backend reads visible desktop pixels. Minimized, obscured, or GPU-protected rendering is not guaranteed to be captured correctly.
+
+## Safety and current module scope
 
 - Unknown game state means **no automation actions**; recognized state changes must be stable for two consecutive scans.
-- Automatic actions only run in the recognized lobby or match state.
-- Upgrade and skip require separate availability markers; upgrade also requires a selected-unit marker.
-- Only one configured placement is attempted per engine tick.
+- Automatic actions only run in a recognized lobby or match.
+- Auto Start Match is limited to clicking the lobby start control; it does not manage farming waves or strategy.
+- Auto Upgrade requires both a selected-unit marker and an upgrade-available marker. It does not choose units or priorities.
+- Auto Skip requires its availability marker.
+- Auto Place reads up to 20 manually configured client-area coordinates and attempts one placement per engine tick. Its default count is zero.
 - The engine stops if the Roblox window disappears and pauses while another window is active.
-- Template clicks target the center of the matched image.
-- Missing templates are treated as unavailable actions; no default coordinates are guessed.
+- Missing templates and unrecognized states do not trigger guessed coordinates or blind clicks.
 
-## Important limitations
+## Limitations
 
-This is an integration scaffold, **not a finished game-specific bot**. No official game UI templates, verified placement coordinates, unit priorities, currency OCR, wave OCR, or map-specific strategy are bundled. You must create templates from your own current game screenshots.
-
-The integrated Python/OpenCV worker captures the Roblox client area and publishes detections through an atomic TSV file. The AHK bridge consumes fresh detections; if the worker cannot start or stops updating, the engine falls back to built-in ImageSearch. DWM Thumbnail remains preview-only and is not used as the recognition source.
-
-## Vision worker\n\nThe worker is read-only: it captures and recognizes images but never sends input. Install dependencies using the command above. It scans PNG templates in `Templates/`, uses an 0.82 similarity threshold at 8 FPS, and writes current detections under `runtime/vision.tsv`. If Python or its dependencies are unavailable, the AHK engine falls back to ImageSearch. The capture backend requires Windows and captures visible desktop pixels; minimized or obscured game rendering is not guaranteed.\n\n## Module scope
-
-- Auto Start Match is the current limited AutoFarm behavior; it clicks the lobby start control only. It does not yet manage farming waves or unit strategy.
-- Auto Upgrade acts only when a unit-selected marker and an upgrade-available marker are both detected. It does not choose units or priorities.
-- Auto Skip acts only when its availability marker is detected.
-- Auto Place reads up to 20 manually configured client-area coordinates and attempts one placement per tick. The default count is zero.
+This is an integration scaffold, **not a finished game-specific bot**. No official game UI templates, verified placement coordinates, unit priorities, currency OCR, wave OCR, or map-specific strategy are bundled. OCR has not yet been implemented.
 
 ## Configuration
 
