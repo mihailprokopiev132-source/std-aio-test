@@ -28,7 +28,7 @@ global CapturePid := 0
 global CurrentMode := "Solo"
 
 global CaptureExe := A_ScriptDir
-    . "\\Capture\\bin\\Debug\\net8.0-windows10.0.19041.0\\Capture.exe"
+    . "\bin\Debug\net8.0-windows10.0.19041.0\Capture.exe"
 
 ; ==========================================
 ; GUI
@@ -264,6 +264,8 @@ Tabs.OnEvent("Change", TabChanged)
 MainGui.OnEvent("Size", MainGuiResized)
 MainGui.OnEvent("Close", MainWindowClose)
 
+RecognitionSelect.Choose(1)
+ConfigInfo.Text := "Mode: " Settings["GameMode"] "`nRecognition: ImageSearch`nCapture: Stopped"
 MainGui.Show("w800 h600")
 
 AddLog("STD-AIO initialized.")
