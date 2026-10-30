@@ -16,10 +16,7 @@ EngineStart() {
         return false
     }
     RobloxHwnd := hwnd
-    if !WinActive("ahk_id " RobloxHwnd) {
-        AddLog("Activate Roblox before starting.")
-        return false
-    }
+    ; The GUI button takes focus when clicked. Start safely, then wait until Roblox is foreground.
 
     IsRunning := true
     ModuleCooldowns := Map()
@@ -30,7 +27,7 @@ EngineStart() {
     StopButton.Enabled := true
     UpdateStatus("RUNNING")
     SetTimer(EngineTick, Settings["CaptureInterval"])
-    AddLog("Engine started. Interval: " Settings["CaptureInterval"] " ms.")
+    AddLog("Engine started. Activate Roblox to allow game input. Interval: " Settings["CaptureInterval"] " ms.")
     return true
 }
 
