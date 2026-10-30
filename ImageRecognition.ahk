@@ -3,7 +3,7 @@
 global TemplateDir := A_ScriptDir "\Templates"
 
 FindTemplate(templateName, &foundX := 0, &foundY := 0, variation := 25) {
-    global RobloxHwnd, TemplateDir
+    global RobloxHwnd, TemplateDir, VisionActive
     foundX := 0
     foundY := 0
 
@@ -14,7 +14,6 @@ FindTemplate(templateName, &foundX := 0, &foundY := 0, variation := 25) {
         return false
 
     ; Prefer fresh OpenCV detections; fall back to AHK ImageSearch if the worker fails.
-    global VisionActive
     if VisionActive {
         visionResult := VisionFindTemplate(templateName, &visionX, &visionY)
         if visionResult = 1 {
