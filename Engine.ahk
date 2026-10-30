@@ -1,10 +1,14 @@
 #Requires AutoHotkey v2.0
+
 global EngineBusy := false
 global ModuleCooldowns := Map()
+
 EngineStart() {
-    global IsRunning, RobloxHwnd, Settings, StartButton, StopButton, AutoPlaceDone
+    global IsRunning, RobloxHwnd, Settings, StartButton, StopButton
+    global CurrentGameState, PreviousGameState, AutoPlaceDone
     if IsRunning
         return true
+
     hwnd := WinExist("ahk_exe RobloxPlayerBeta.exe")
     if !hwnd {
         AddLog("Engine start rejected: Roblox was not found.")
@@ -16,9 +20,12 @@ EngineStart() {
         AddLog("Activate Roblox before starting.")
         return false
     }
+
     IsRunning := true
     ModuleCooldowns := Map()
     AutoPlaceDone := Map()
+    CurrentGameState := "Unknown"
+    PreviousGameState := "Unknown"
     StartButton.Enabled := false
     StopButton.Enabled := true
     UpdateStatus("RUNNING")
@@ -26,6 +33,7 @@ EngineStart() {
     AddLog("Engine started. Interval: " Settings["CaptureInterval"] " ms.")
     return true
 }
+
 EngineStop(reason := "Macro stopped.") {
     global IsRunning, StartButton, StopButton
     SetTimer(EngineTick, 0)
@@ -37,6 +45,7 @@ EngineStop(reason := "Macro stopped.") {
     UpdateStatus("IDLE")
     AddLog(reason)
 }
+
 EngineTick() {
     global IsRunning, EngineBusy, Settings, RobloxHwnd
     if !IsRunning || EngineBusy
@@ -49,14 +58,19 @@ EngineTick() {
         }
         if !WinActive("ahk_id " RobloxHwnd)
             return
-        if Settings["AutoFarm"]
-            AutoFarm_Tick()
-        if Settings["AutoPlace"]
-            AutoPlace_Tick()
-        if Settings["AutoUpgrade"]
-            AutoUpgrade_Tick()
-        if Settings["AutoSkip"]
-            AutoSkip_Tick()
+
+        state := UpdateGameState()
+        UpdateGameStateStatus(state)
+        if state = "Lobby" && Settings["AutoFarm"]
+            AutoFarm_Tick(state)
+        if state = "InMatch" {
+            if Settings["AutoPlace"]
+                AutoPlace_Tick(state)
+            if Settings["AutoUpgrade"]
+                AutoUpgrade_Tick(state)
+            if Settings["AutoSkip"]
+                AutoSkip_Tick(state)
+        }
     } catch as err {
         AddLog("Engine error: " err.Message)
         EngineStop("Engine stopped after an error.")
