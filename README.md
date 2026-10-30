@@ -25,7 +25,9 @@ Use **`GUI.ahk`** as the main application entry point. `STD-AIO.ahk` is the earl
 
 1. Keep the AHK files and `config.ini` in the same folder.
 2. Install AutoHotkey v2.
-3. Capture your own PNG templates from the current game UI and put them in `Templates/`.
+3. Install the optional OpenCV dependencies with `python -m pip install -r requirements-vision.txt`.
+4. Capture your own PNG templates from the current game UI and put them in `Templates/`.
+5. Keep template filenames to letters, numbers, underscores, or hyphens (for example `state_match.png`).
 4. Configure placement coordinates in `config.ini` only after checking them against your Roblox client resolution.
 5. Run `GUI.ahk` and press START.
 6. Switch to Roblox. The engine waits until Roblox is the foreground window before sending input.
@@ -50,9 +52,9 @@ See [Templates/README.txt](Templates/README.txt) for all state and action marker
 
 This is an integration scaffold, **not a finished game-specific bot**. No official game UI templates, verified placement coordinates, unit priorities, currency OCR, wave OCR, or map-specific strategy are bundled. You must create templates from your own current game screenshots.
 
-The existing Python/OpenCV detector files found in the project library are a separate prototype and are not yet wired into this AutoHotkey engine. The current engine uses AutoHotkey ImageSearch. DWM Thumbnail is preview-only and does not expose frame pixels to the AHK modules.
+The integrated Python/OpenCV worker captures the Roblox client area and publishes detections through an atomic TSV file. The AHK bridge consumes fresh detections; if the worker cannot start or stops updating, the engine falls back to built-in ImageSearch. DWM Thumbnail remains preview-only and is not used as the recognition source.
 
-## Module scope
+## Vision worker\n\nThe worker is read-only: it captures and recognizes images but never sends input. Install dependencies using the command above. It scans PNG templates in `Templates/`, uses an 0.82 similarity threshold at 8 FPS, and writes current detections under `runtime/vision.tsv`. If Python or its dependencies are unavailable, the AHK engine falls back to ImageSearch. The capture backend requires Windows and captures visible desktop pixels; minimized or obscured game rendering is not guaranteed.\n\n## Module scope
 
 - Auto Start Match is the current limited AutoFarm behavior; it clicks the lobby start control only. It does not yet manage farming waves or unit strategy.
 - Auto Upgrade acts only when a unit-selected marker and an upgrade-available marker are both detected. It does not choose units or priorities.
