@@ -21,6 +21,8 @@ Development build for Sorcerer Tower Defense.
 
 ## Run
 
+Use **`GUI.ahk`** as the main application entry point. `STD-AIO.ahk` is the earlier standalone screen-preview prototype and is not the integrated engine.
+
 1. Keep the AHK files and `config.ini` in the same folder.
 2. Install AutoHotkey v2.
 3. Capture your own PNG templates from the current game UI and put them in `Templates/`.
