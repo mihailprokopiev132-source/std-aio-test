@@ -199,7 +199,7 @@ MainGui.AddText("x35 y180 w250 h20", "RECOGNITION")
 
 global RecognitionSelect := MainGui.AddDropDownList(
     "x35 y210 w200 Choose1",
-    ["ImageSearch", "PixelSearch"]
+    ["ImageSearch"]
 )
 
 MainGui.AddText("x35 y260 w250 h20", "CAPTURE INTERVAL (MS)")
@@ -265,7 +265,7 @@ Tabs.OnEvent("Change", TabChanged)
 MainGui.OnEvent("Size", MainGuiResized)
 MainGui.OnEvent("Close", MainWindowClose)
 
-RecognitionSelect.Choose(Settings["RecognitionMethod"] = "PixelSearch" ? 2 : 1)
+RecognitionSelect.Choose(1)
 ConfigInfo.Text := "Mode: " Settings["GameMode"] "`nRecognition: " Settings["RecognitionMethod"] "`nCapture: Stopped"
 MainGui.Show("w800 h600")
 
