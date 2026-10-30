@@ -28,7 +28,7 @@ global CapturePid := 0
 global CurrentMode := "Solo"
 
 global CaptureExe := A_ScriptDir
-    . "\\Capture\\bin\\Debug\\net8.0-windows10.0.19041.0\\Capture.exe"
+    . "\Capture\bin\Debug\net8.0-windows10.0.19041.0\Capture.exe"
 
 ; ==========================================
 ; GUI
@@ -198,7 +198,7 @@ MainGui.AddText("x35 y180 w250 h20", "RECOGNITION")
 
 global RecognitionSelect := MainGui.AddDropDownList(
     "x35 y210 w200 Choose1",
-    ["ImageSearch", "PixelSearch"]
+    ["ImageSearch"]
 )
 
 MainGui.AddText("x35 y260 w250 h20", "CAPTURE INTERVAL (MS)")
@@ -264,6 +264,8 @@ Tabs.OnEvent("Change", TabChanged)
 MainGui.OnEvent("Size", MainGuiResized)
 MainGui.OnEvent("Close", MainWindowClose)
 
+RecognitionSelect.Choose(1)
+ConfigInfo.Text := "Mode: " Settings["GameMode"] "`nRecognition: ImageSearch`nCapture: Stopped"
 MainGui.Show("w800 h600")
 
 AddLog("STD-AIO initialized.")
