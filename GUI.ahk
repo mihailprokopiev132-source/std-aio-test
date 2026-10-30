@@ -3,6 +3,7 @@
 #SingleInstance Force
 #Include Config.ahk
 #Include Input.ahk
+#Include VisionBridge.ahk
 #Include ImageRecognition.ahk
 #Include GameState.ahk
 #Include AutoFarm.ahk
