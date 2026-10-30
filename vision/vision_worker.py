@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 import sys
 import tempfile
 import time
@@ -108,7 +109,7 @@ def load_templates(folder: Path):
         image = cv2.imread(str(path), cv2.IMREAD_GRAYSCALE)
         if image is None or image.size == 0:
             continue
-        if not path.stem.isascii() or not __import__("re").fullmatch(r"[A-Za-z0-9_-]{1,64}", path.stem):
+        if not path.stem.isascii() or not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", path.stem):
             continue
         height, width = image.shape[:2]
         if width < 5 or height < 5 or float(image.std()) < 1.0:
