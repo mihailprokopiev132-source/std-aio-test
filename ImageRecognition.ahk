@@ -14,17 +14,20 @@ FindTemplate(templateName, &foundX := 0, &foundY := 0, variation := 25) {
         return false
 
     ; Prefer fresh OpenCV detections; fall back to AHK ImageSearch if the worker fails.
-    visionResult := VisionFindTemplate(templateName, &visionX, &visionY)
-    if visionResult = 1 {
-        foundX := visionX
-        foundY := visionY
-        return true
-    }
-    if visionResult = 0 || visionResult = -1
-        return false
-    if visionResult = -2 {
-        VisionStop()
-        AddLog("OpenCV worker stopped responding; falling back to ImageSearch.")
+    global VisionActive
+    if VisionActive {
+        visionResult := VisionFindTemplate(templateName, &visionX, &visionY)
+        if visionResult = 1 {
+            foundX := visionX
+            foundY := visionY
+            return true
+        }
+        if visionResult = 0 || visionResult = -1
+            return false
+        if visionResult = -2 {
+            VisionStop()
+            AddLog("OpenCV worker stopped responding; falling back to ImageSearch.")
+        }
     }
 
     file := TemplateDir "\" templateName ".png"
