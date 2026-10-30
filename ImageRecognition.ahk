@@ -13,6 +13,16 @@ FindTemplate(templateName, &foundX := 0, &foundY := 0, variation := 25) {
     if !RobloxHwnd || !WinExist("ahk_id " RobloxHwnd)
         return false
 
+    ; Prefer fresh OpenCV detections; fall back to AHK ImageSearch if the worker fails.
+    visionResult := VisionFindTemplate(templateName, &visionX, &visionY)
+    if visionResult = 1 {
+        foundX := visionX
+        foundY := visionY
+        return true
+    }
+    if visionResult = 0 || visionResult = -1
+        return false
+
     file := TemplateDir "\" templateName ".png"
     if !FileExist(file)
         return false
