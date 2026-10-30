@@ -22,6 +22,14 @@ class VisionWorkerTests(unittest.TestCase):
         self.assertEqual((hits[0][1], hits[0][2]), (47, 31))
         self.assertGreaterEqual(hits[0][5], 0.99)
 
+    def test_detect_rejects_uniform_frame_regions(self):
+        template = np.random.default_rng(23).integers(0, 256, (12, 12), dtype=np.uint8)
+        frame = np.zeros((40, 40, 3), dtype=np.uint8)
+
+        hits = detect(frame, [("marker", template)], 0.50)
+
+        self.assertEqual(hits, [])
+
     def test_load_templates_ignores_invalid_names_and_flat_images(self):
         with tempfile.TemporaryDirectory() as temp:
             folder = Path(temp)
