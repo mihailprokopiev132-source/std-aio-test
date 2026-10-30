@@ -4,6 +4,7 @@
 #Include Config.ahk
 #Include Input.ahk
 #Include ImageRecognition.ahk
+#Include GameState.ahk
 #Include AutoFarm.ahk
 #Include AutoPlace.ahk
 #Include AutoUpgrade.ahk
@@ -264,8 +265,8 @@ Tabs.OnEvent("Change", TabChanged)
 MainGui.OnEvent("Size", MainGuiResized)
 MainGui.OnEvent("Close", MainWindowClose)
 
-RecognitionSelect.Choose(1)
-ConfigInfo.Text := "Mode: " Settings["GameMode"] "`nRecognition: ImageSearch`nCapture: Stopped"
+RecognitionSelect.Choose(Settings["RecognitionMethod"] = "PixelSearch" ? 2 : 1)
+ConfigInfo.Text := "Mode: " Settings["GameMode"] "`nRecognition: " Settings["RecognitionMethod"] "`nCapture: Stopped"
 MainGui.Show("w800 h600")
 
 AddLog("STD-AIO initialized.")
