@@ -4,12 +4,17 @@ InputClickScreen(x, y, button := "Left") {
     global RobloxHwnd
     if !RobloxHwnd || !WinExist("ahk_id " RobloxHwnd) || !WinActive("ahk_id " RobloxHwnd)
         return false
+
     WinGetClientPos(&left, &top, &width, &height, "ahk_id " RobloxHwnd)
     if x < left || y < top || x >= left + width || y >= top + height
         return false
+
+    ; ImageSearch returns screen coordinates; make Click use the same coordinate space.
+    CoordMode("Mouse", "Screen")
     Click(x, y, 1, button)
     return true
 }
+
 InputClickClient(x, y, button := "Left") {
     global RobloxHwnd
     if !RobloxHwnd || !WinExist("ahk_id " RobloxHwnd)
@@ -19,6 +24,7 @@ InputClickClient(x, y, button := "Left") {
         return false
     return InputClickScreen(left + x, top + y, button)
 }
+
 InputPressKey(key) {
     global RobloxHwnd
     allowed := ["w","a","s","d","e","q","r","f","space","shift","ctrl","alt","tab","enter","esc","up","down","left","right","1","2","3","4","5"]
