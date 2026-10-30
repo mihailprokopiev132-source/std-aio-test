@@ -5,7 +5,7 @@ global ModuleCooldowns := Map()
 
 EngineStart() {
     global IsRunning, RobloxHwnd, Settings, StartButton, StopButton
-    global CurrentGameState, PreviousGameState, AutoPlaceDone
+    global CurrentGameState, PreviousGameState, AutoPlaceDone, ModuleCooldowns
     if IsRunning
         return true
 
