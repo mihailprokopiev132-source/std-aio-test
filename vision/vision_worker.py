@@ -38,6 +38,19 @@ class POINT(ctypes.Structure):
 
 ENUMPROC = ctypes.WINFUNCTYPE(wintypes.BOOL, wintypes.HWND, wintypes.LPARAM)
 
+USER32.IsWindowVisible.argtypes = [wintypes.HWND]
+USER32.IsWindowVisible.restype = wintypes.BOOL
+USER32.GetWindowThreadProcessId.argtypes = [wintypes.HWND, ctypes.POINTER(wintypes.DWORD)]
+USER32.GetWindowThreadProcessId.restype = wintypes.DWORD
+USER32.GetClientRect.argtypes = [wintypes.HWND, ctypes.POINTER(RECT)]
+USER32.GetClientRect.restype = wintypes.BOOL
+USER32.ClientToScreen.argtypes = [wintypes.HWND, ctypes.POINTER(POINT)]
+USER32.ClientToScreen.restype = wintypes.BOOL
+USER32.EnumWindows.argtypes = [ENUMPROC, wintypes.LPARAM]
+USER32.EnumWindows.restype = wintypes.BOOL
+USER32.SetProcessDPIAware.argtypes = []
+USER32.SetProcessDPIAware.restype = wintypes.BOOL
+
 
 def enable_dpi_awareness():
     try:
@@ -168,6 +181,10 @@ def main():
         raise SystemExit("--threshold must be between 0.50 and 0.99.")
 
     enable_dpi_awareness()
+    try:
+        args.stop_file.unlink(missing_ok=True)
+    except OSError as exc:
+        raise SystemExit(f"Cannot prepare stop file: {exc}")
     templates = load_templates(args.templates)
     interval = 1.0 / args.fps
 
