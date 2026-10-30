@@ -183,7 +183,7 @@ MainGui.AddText("x390 y180 w250 h20", "MODULE STATUS")
 
 global ModuleStatus := MainGui.AddText(
     "x390 y215 w300 h120",
-    "Auto Start Match: Ready`nAuto Upgrade: Ready`nAuto Skip: Disabled`nAuto Place: Ready"
+    "Auto Start Match: Template required`nAuto Upgrade: Templates required`nAuto Skip: Off by default`nAuto Place: Config required"
 )
 
 ; ==========================================
