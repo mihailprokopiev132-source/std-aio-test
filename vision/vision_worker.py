@@ -60,6 +60,12 @@ def enable_dpi_awareness():
         pass
 
 
+def hwnd_to_int(hwnd):
+    if isinstance(hwnd, int):
+        return hwnd
+    return int(ctypes.cast(hwnd, ctypes.c_void_p).value or 0)
+
+
 def find_roblox_client(target_hwnd=0):
     """Return the requested Roblox client area, or the largest one if unspecified."""
     pids = set()
@@ -75,7 +81,7 @@ def find_roblox_client(target_hwnd=0):
     found = []
 
     def visit(hwnd, _):
-        if target_hwnd and int(hwnd) != target_hwnd:
+        if target_hwnd and hwnd_to_int(hwnd) != target_hwnd:
             return True
         if not USER32.IsWindowVisible(hwnd):
             return True
@@ -92,7 +98,7 @@ def find_roblox_client(target_hwnd=0):
         origin = POINT(0, 0)
         if not USER32.ClientToScreen(hwnd, ctypes.byref(origin)):
             return True
-        found.append((int(hwnd), int(origin.x), int(origin.y), int(width), int(height)))
+        found.append((hwnd_to_int(hwnd), int(origin.x), int(origin.y), int(width), int(height)))
         return True
 
     USER32.EnumWindows(ENUMPROC(visit), 0)
