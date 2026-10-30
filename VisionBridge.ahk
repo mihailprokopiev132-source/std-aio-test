@@ -7,7 +7,7 @@ global VisionOutputPath := A_ScriptDir "\runtime\vision.tsv"
 global VisionStopPath := A_ScriptDir "\runtime\vision.stop"
 
 VisionStart() {
-    global VisionActive, VisionPid, VisionStartedAt
+    global VisionActive, VisionPid, VisionStartedAt, RobloxHwnd
     global VisionOutputPath, VisionStopPath
 
     if VisionActive
@@ -30,6 +30,7 @@ VisionStart() {
             . ' --templates "' A_ScriptDir '\Templates"'
             . ' --output "' VisionOutputPath '"'
             . ' --stop-file "' VisionStopPath '"'
+            . ' --hwnd ' RobloxHwnd
             . ' --fps 8 --threshold 0.82'
 
         Run(command, A_ScriptDir, "Hide", &VisionPid)
