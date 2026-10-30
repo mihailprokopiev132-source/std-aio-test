@@ -183,10 +183,6 @@ def main():
         raise SystemExit("--threshold must be between 0.50 and 0.99.")
 
     enable_dpi_awareness()
-    try:
-        args.stop_file.unlink(missing_ok=True)
-    except OSError as exc:
-        raise SystemExit(f"Cannot prepare stop file: {exc}")
     templates = load_templates(args.templates)
     interval = 1.0 / args.fps
 
