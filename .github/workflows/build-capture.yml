@@ -50,3 +50,23 @@ jobs:
 
       - name: Run vision tests
         run: python -m unittest discover -s vision -p "test_*.py" -v
+
+  package-source:
+    runs-on: windows-latest
+    needs:
+      - build-capture
+      - check-python-vision
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create source archive
+        shell: pwsh
+        run: git archive --format=zip --output=STD-AIO-source.zip HEAD
+
+      - name: Upload source archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: STD-AIO-source
+          path: STD-AIO-source.zip
+          if-no-files-found: error
