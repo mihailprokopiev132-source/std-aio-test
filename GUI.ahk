@@ -1,6 +1,16 @@
 ﻿
 #Requires AutoHotkey v2.0
 #SingleInstance Force
+#Include Config.ahk
+#Include Input.ahk
+#Include ImageRecognition.ahk
+#Include AutoFarm.ahk
+#Include AutoPlace.ahk
+#Include AutoUpgrade.ahk
+#Include AutoSkip.ahk
+#Include Engine.ahk
+
+global Settings := LoadSettings()
 
 ; ==========================================
 ; STD-AIO | Sorcerer Tower Defense
@@ -18,7 +28,7 @@ global CapturePid := 0
 global CurrentMode := "Solo"
 
 global CaptureExe := A_ScriptDir
-    . "\..\Capture\bin\Debug\net8.0-windows10.0.19041.0\Capture.exe"
+    . "\bin\Debug\net8.0-windows10.0.19041.0\Capture.exe"
 
 ; ==========================================
 ; GUI
@@ -68,7 +78,7 @@ global GameStatus := MainGui.AddText(
 MainGui.AddText("x35 y250 w150 h20", "GAME MODE")
 
 global ModeSelect := MainGui.AddDropDownList(
-    "x35 y275 w180 Choose1",
+    "x35 y275 w180 Choose" (Settings["GameMode"] = "Multiplayer" ? 2 : 1),
     ["Solo", "Multiplayer"]
 )
 
@@ -148,22 +158,22 @@ MainGui.SetFont("s10 cA0A6B5")
 MainGui.AddText("x35 y180 w250 h20", "AUTOMATION MODULES")
 
 global FarmCheck := MainGui.AddCheckbox(
-    "x35 y215 Checked",
+    "x35 y215 " (Settings["AutoFarm"] ? "Checked" : ""),
     "Enable Auto Farm"
 )
 
 global UpgradeCheck := MainGui.AddCheckbox(
-    "x35 y250 Checked",
+    "x35 y250 " (Settings["AutoUpgrade"] ? "Checked" : ""),
     "Enable Auto Upgrade"
 )
 
 global WaveCheck := MainGui.AddCheckbox(
-    "x35 y285",
+    "x35 y285 " (Settings["AutoSkip"] ? "Checked" : ""),
     "Enable Auto Wave"
 )
 
 global AutoPlaceCheck := MainGui.AddCheckbox(
-    "x35 y320 Checked",
+    "x35 y320 " (Settings["AutoPlace"] ? "Checked" : ""),
     "Enable Auto Place"
 )
 
@@ -195,7 +205,7 @@ MainGui.AddText("x35 y260 w250 h20", "CAPTURE INTERVAL (MS)")
 
 global IntervalInput := MainGui.AddEdit(
     "x35 y290 w200 Number",
-    "250"
+    String(Settings["CaptureInterval"])
 )
 
 global SaveSettingsButton := MainGui.AddButton(
@@ -254,6 +264,8 @@ Tabs.OnEvent("Change", TabChanged)
 MainGui.OnEvent("Size", MainGuiResized)
 MainGui.OnEvent("Close", MainWindowClose)
 
+RecognitionSelect.Choose(1)
+ConfigInfo.Text := "Mode: " Settings["GameMode"] "`nRecognition: ImageSearch`nCapture: Stopped"
 MainGui.Show("w800 h600")
 
 AddLog("STD-AIO initialized.")
@@ -263,30 +275,11 @@ AddLog("STD-AIO initialized.")
 ; ==========================================
 
 StartMacro(*) {
-    global IsRunning, StartButton, StopButton
-
-    if IsRunning
-        return
-
-    IsRunning := true
-
-    StartButton.Enabled := false
-    StopButton.Enabled := true
-
-    UpdateStatus("RUNNING")
-    AddLog("Macro started.")
+    EngineStart()
 }
 
 StopMacro(*) {
-    global IsRunning, StartButton, StopButton
-
-    IsRunning := false
-
-    StartButton.Enabled := true
-    StopButton.Enabled := false
-
-    UpdateStatus("IDLE")
-    AddLog("Macro stopped.")
+    EngineStop("Macro stopped by user.")
 }
 
 ; ==========================================
@@ -466,6 +459,7 @@ MainGuiResized(gui, minMax, *) {
 }
 
 MainWindowClose(*) {
+    EngineStop("Application closing.")
     StopCapture()
     ExitApp()
 }
@@ -475,32 +469,26 @@ MainWindowClose(*) {
 ; ==========================================
 
 SaveSettings(*) {
-    global IntervalInput
-
     try {
-        interval := Integer(IntervalInput.Value)
-    } catch {
-        MsgBox("Enter a valid number.")
-        return
+        SaveSettingsFromGui()
+        ConfigInfo.Text := "Mode: " Settings["GameMode"] "`nRecognition: " Settings["RecognitionMethod"] "`nCapture: " (IsCapturing ? "Running" : "Stopped")
+        AddLog("Settings saved to config.ini.")
+        if IsRunning {
+            SetTimer(EngineTick, 0)
+            SetTimer(EngineTick, Settings["CaptureInterval"])
+        }
+    } catch as err {
+        MsgBox(err.Message, "STD-AIO settings")
     }
-
-    if interval < 30 || interval > 5000 {
-        MsgBox("Interval must be between 30 and 5000 ms.")
-        return
-    }
-
-    AddLog("Capture interval set to " interval " ms.")
 }
 
 UpdateMode(*) {
     global ModeSelect, CurrentMode, ConfigInfo
-
     CurrentMode := ModeSelect.Text
-
+    Settings["GameMode"] := CurrentMode
     ConfigInfo.Text := "Mode: " CurrentMode
-        . "`nRecognition: ImageSearch"
-        . "`nCapture: Not initialized"
-
+        . "`nRecognition: " Settings["RecognitionMethod"]
+        . "`nCapture: " (IsCapturing ? "Running" : "Stopped")
     AddLog("Mode changed to " CurrentMode ".")
 }
 
