@@ -106,6 +106,7 @@ global ConfigInfo := MainGui.AddText(
     "x390 y210 w300 h120",
     "Mode: Solo`nRecognition: ImageSearch`nCapture: Stopped"
 )
+global GameStateStatus := MainGui.AddText("x390 y340 w300 h25", "Game state: Unknown")
 
 ; ==========================================
 ; CAPTURE
@@ -160,7 +161,7 @@ MainGui.AddText("x35 y180 w250 h20", "AUTOMATION MODULES")
 
 global FarmCheck := MainGui.AddCheckbox(
     "x35 y215 " (Settings["AutoFarm"] ? "Checked" : ""),
-    "Enable Auto Farm"
+    "Enable Auto Start Match"
 )
 
 global UpgradeCheck := MainGui.AddCheckbox(
@@ -170,7 +171,7 @@ global UpgradeCheck := MainGui.AddCheckbox(
 
 global WaveCheck := MainGui.AddCheckbox(
     "x35 y285 " (Settings["AutoSkip"] ? "Checked" : ""),
-    "Enable Auto Wave"
+    "Enable Auto Skip Wave"
 )
 
 global AutoPlaceCheck := MainGui.AddCheckbox(
@@ -182,7 +183,7 @@ MainGui.AddText("x390 y180 w250 h20", "MODULE STATUS")
 
 global ModuleStatus := MainGui.AddText(
     "x390 y215 w300 h120",
-    "Auto Farm: Ready`nAuto Upgrade: Ready`nAuto Wave: Disabled`nAuto Place: Ready"
+    "Auto Start Match: Ready`nAuto Upgrade: Ready`nAuto Skip: Disabled`nAuto Place: Ready"
 )
 
 ; ==========================================
@@ -501,6 +502,11 @@ UpdateStatus(status) {
     global MainStatus
 
     MainStatus.Text := "STATUS: " status
+}
+
+UpdateGameStateStatus(state) {
+    global GameStateStatus
+    GameStateStatus.Text := "Game state: " state
 }
 
 AddLog(message) {
