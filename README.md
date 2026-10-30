@@ -50,6 +50,13 @@ This is an integration scaffold, **not a finished game-specific bot**. No offici
 
 The existing Python/OpenCV detector files found in the project library are a separate prototype and are not yet wired into this AutoHotkey engine. The current engine uses AutoHotkey ImageSearch. DWM Thumbnail is preview-only and does not expose frame pixels to the AHK modules.
 
+## Module scope
+
+- Auto Start Match is the current limited AutoFarm behavior; it clicks the lobby start control only. It does not yet manage farming waves or unit strategy.
+- Auto Upgrade acts only when a unit-selected marker and an upgrade-available marker are both detected. It does not choose units or priorities.
+- Auto Skip acts only when its availability marker is detected.
+- Auto Place reads up to 20 manually configured client-area coordinates and attempts one placement per tick. The default count is zero.
+
 ## Configuration
 
 `config.ini` stores module toggles, interval, mode, and up to 20 placement entries. Placement count defaults to 0, so no unit placement occurs until configured.
