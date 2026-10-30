@@ -29,6 +29,7 @@ EngineStart() {
     StartButton.Enabled := false
     StopButton.Enabled := true
     UpdateStatus("RUNNING")
+    VisionStart()
     SetTimer(EngineTick, Settings["CaptureInterval"])
     AddLog("Engine started. Activate Roblox to allow game input. Interval: " Settings["CaptureInterval"] " ms.")
     return true
@@ -37,6 +38,7 @@ EngineStart() {
 EngineStop(reason := "Macro stopped.") {
     global IsRunning, StartButton, StopButton
     SetTimer(EngineTick, 0)
+    VisionStop()
     IsRunning := false
     if IsSet(StartButton)
         StartButton.Enabled := true
